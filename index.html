@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive RGB Site</title>
+    <title>Complex Animated UI</title>
     <style>
+        /* General Style */
         body {
             margin: 0;
             font-family: 'Arial', sans-serif;
@@ -13,12 +14,13 @@
             overflow: hidden;
         }
 
-        /* Main Heading Style with RGB Animation */
+        /* Main Title with Obfuscation and RGB Animation */
         h1 {
             font-size: 80px;
             position: absolute;
             top: 30px;
             left: 10%;
+            font-family: 'Arial', sans-serif;
             animation: colorChange 3s infinite, move 5s infinite ease-in-out;
             text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.8);
             z-index: 2;
@@ -56,11 +58,27 @@
             100% { opacity: 0.2; }
         }
 
+        /* RGB Overlay for Video */
+        .rgb-video-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.3);
+            animation: rgbPulse 8s infinite;
+        }
+
+        @keyframes rgbPulse {
+            0% { background: rgba(255, 0, 0, 0.3); }
+            33% { background: rgba(0, 255, 0, 0.3); }
+            66% { background: rgba(0, 0, 255, 0.3); }
+            100% { background: rgba(255, 0, 0, 0.3); }
+        }
+
         /* Hidden YouTube Video */
         .hidden-video {
             position: absolute;
-            width: 0;
-            height: 0;
+            width: 100vw;
+            height: 100vh;
             z-index: 0;
         }
 
@@ -119,6 +137,37 @@
             100% { opacity: 0; }
         }
 
+        /* Input and Form Styling */
+        .input-container {
+            position: absolute;
+            top: 60%;
+            left: 30%;
+            z-index: 2;
+        }
+
+        input, button {
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 18px;
+            background-color: #333;
+            color: white;
+        }
+
+        input:hover, button:hover {
+            background-color: #555;
+        }
+
+        /* Parallax Effect */
+        .parallax {
+            height: 100vh;
+            overflow-y: auto;
+            background-image: url('https://www.example.com/bg-image.jpg');
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
     </style>
 </head>
 <body>
@@ -127,6 +176,9 @@
 
     <!-- RGB Overlay -->
     <div class="rgb-overlay"></div>
+
+    <!-- RGB Overlay over Video -->
+    <div class="rgb-video-overlay"></div>
 
     <!-- Cool Button Interaction -->
     <button class="cool-btn" onclick="playAudio()">Click to Start Audio</button>
@@ -142,6 +194,15 @@
 
     <!-- Background Star Animations -->
     <div id="star-container"></div>
+
+    <!-- Input Form for User Interaction -->
+    <div class="input-container">
+        <input type="text" placeholder="Type something..." id="userInput">
+        <button onclick="showInput()">Submit</button>
+    </div>
+
+    <!-- Parallax Effect Section -->
+    <div class="parallax"></div>
 
     <!-- JavaScript -->
     <script>
@@ -174,6 +235,12 @@
         }
 
         generateStars(); // Call to generate stars for background effect
+
+        // Function to display user input
+        function showInput() {
+            let input = document.getElementById('userInput').value;
+            alert('You typed: ' + input);
+        }
     </script>
 </body>
 </html>
