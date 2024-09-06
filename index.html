@@ -3,9 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Interactive RGB Site</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: black;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Main Heading Style with RGB Animation */
+        h1 {
+            font-size: 80px;
+            position: absolute;
+            top: 30px;
+            left: 10%;
+            animation: colorChange 3s infinite, move 5s infinite ease-in-out;
+            text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.8);
+            z-index: 2;
+        }
+
+        @keyframes colorChange {
+            0% { color: red; }
+            25% { color: green; }
+            50% { color: blue; }
+            75% { color: purple; }
+            100% { color: red; }
+        }
+
+        @keyframes move {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(200px); }
+        }
+
+        /* RGB Overlay Effect */
+        .rgb-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(90deg, rgba(255,0,0,0.5), rgba(0,255,0,0.5), rgba(0,0,255,0.5));
+            mix-blend-mode: screen;
+            animation: pulse 5s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.2; }
+            50% { opacity: 0.5; }
+            100% { opacity: 0.2; }
+        }
+
+        /* Hidden YouTube Video */
+        .hidden-video {
+            position: absolute;
+            width: 0;
+            height: 0;
+            z-index: 0;
+        }
+
+        /* Cool button for user interaction */
+        .cool-btn {
+            position: absolute;
+            top: 20%;
+            left: 40%;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #ff7e5f, #feb47b);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 2;
+            transition: transform 0.3s;
+        }
+
+        .cool-btn:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Video overlay container */
+        .video-overlay {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            opacity: 0.8;
+        }
+
+        /* Footer */
+        footer {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            z-index: 2;
+        }
+
+        /* Star background animation */
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            animation: twinkle 10s infinite;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Hello World</h1>
+    <!-- Title Obfuscated and Decoded -->
+    <h1 id="title"></h1>
+
+    <!-- RGB Overlay -->
+    <div class="rgb-overlay"></div>
+
+    <!-- Cool Button Interaction -->
+    <button class="cool-btn" onclick="playAudio()">Click to Start Audio</button>
+
+    <!-- Video Overlay from YouTube -->
+    <iframe class="video-overlay" src="https://www.youtube.com/embed/8JOb5LEnRoc?autoplay=1&mute=0&loop=1&playlist=8JOb5LEnRoc" allow="autoplay; encrypted-media" frameborder="0"></iframe>
+
+    <!-- Hidden YouTube Audio for Music -->
+    <iframe class="hidden-video" id="youtubeAudio" src="https://www.youtube.com/embed/8JOb5LEnRoc?autoplay=1&loop=1&playlist=8JOb5LEnRoc"></iframe>
+
+    <!-- Footer -->
+    <footer>Audio Loop Active</footer>
+
+    <!-- Background Star Animations -->
+    <div id="star-container"></div>
+
+    <!-- JavaScript -->
+    <script>
+        // Function to decode obfuscated title
+        function decodeTitle() {
+            let obfuscated = "U2FkZGFtIE9ubHksIE5vIE1xcXRhZGE="; // Base64 encoded "Saddam Only, No Muqtada"
+            let decoded = atob(obfuscated);
+            document.getElementById('title').textContent = decoded;
+        }
+
+        decodeTitle(); // Call to decode and show the title
+
+        // Function to play audio on button click
+        function playAudio() {
+            var audioFrame = document.getElementById('youtubeAudio');
+            audioFrame.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+        }
+
+        // Function to generate random stars for background
+        function generateStars() {
+            const starContainer = document.getElementById('star-container');
+            for (let i = 0; i < 100; i++) {
+                let star = document.createElement('div');
+                star.classList.add('star');
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.animationDuration = (Math.random() * 10 + 5) + 's';
+                starContainer.appendChild(star);
+            }
+        }
+
+        generateStars(); // Call to generate stars for background effect
+    </script>
 </body>
 </html>
